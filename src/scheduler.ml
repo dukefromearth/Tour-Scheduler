@@ -8,15 +8,15 @@ type employee = {
 
 type schedule = {
 	neighborhood : string;
-	date : string;
-	time : string;
+	date : int list;
+	time : int;
 	day_of_week : string
 }
 
 let make_schedule_from_list ls = {
 	neighborhood = List.nth ls 0;
-	date = List.nth ls 1;
-	time = List.nth ls 2;
+	date = (List.map int_of_string (parse_to_list "/" (List.nth ls 1)));
+	time = int_of_string (List.nth ls 2);
 	day_of_week = List.nth ls 3;
 }
 
