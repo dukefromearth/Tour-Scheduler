@@ -14,7 +14,7 @@ let read_all filename =
   let ic = open_in filename in
   let rec read acc =
     match get_line ic with
-    | Some line -> 	let ls = (parse_to_list "," line) in
+    | Some line ->  let ls = (parse_to_list "," line) in
     								read ((make_employee_from_list ls) :: acc)
     | None ->
         close_in ic; (* close input channel *)
