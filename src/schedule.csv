@@ -1,23 +1,8 @@
-Guide,Priority Number,Days Off,Set Day/Time,Max tours,Duties
-Bert,1,1/20/2019,Saturday;Tuesday,6,Greenwich;Chinatown;Nolita
-Stephen,2,1/21/2019,,,
-Cindy,3,1/22/2019,,,
-Curt,4,1/23/2019,,,
-Paulette,5,1/24/2019,,,
-Chip,6,1/25/2019,,,
-Colleen,7,1/26/2019,,,
-Darrel,8,2/20/2019,,,
-David,9,2/21/2019,,,
-Heather,10,2/22/2019,,,
-Jackie,11,2/23/2019,,,
-Joanna,12,2/24/2019,,,
-Joe,13,2/25/2019,,,
-Jordan,14,2/26/2019,,,
-Marie,15,2/20/2019,,,
-Mason,16,2/21/2019,,,
-Raheem,17,2/22/2019,,,
-RJ,18,2/23/2019,,,
-Robin,19,2/24/2019,,,
-RobinS,20,2/25/2019,,,
-Ryan,21,2/26/2019,,,
-Ted,22,3/27/2019,,,
+neighborhood,date,time,day of week
+greenwich,12/12/88,1100,a
+greenwich,12/12/88,1130,a
+greenwich,12/12/88,1200,a
+greenwich,12/12/88,1100,a
+greenwich,12/12/88,1130,a
+greenwich,12/12/88,1200,a
+greenwich,12/12/88,1230,a

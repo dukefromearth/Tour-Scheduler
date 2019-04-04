@@ -17,7 +17,7 @@ let parse_line_to_list start_from my_fun filename =
   let rec read acc i =
     match get_line ic with
     | Some line -> if i >= start_from then
-    	let ls = (parse_to_list "," line) in
+    	let ls = (parse_to_list "," (String.trim line)) in
     	read ((my_fun ls) :: acc) (succ i)
    	  else read acc (succ i)
     | None ->
