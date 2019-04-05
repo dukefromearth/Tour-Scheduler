@@ -22,6 +22,6 @@ let parse_line_to_list start_from my_fun filename =
    	  else read acc (succ i)
     | None ->
         close_in ic; (* close input channel *)
-        acc (* return parsed list *)
+        List.rev acc (* return parsed list *)
   in
   read [] 0
