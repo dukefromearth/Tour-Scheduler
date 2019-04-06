@@ -1,4 +1,3 @@
-#use "scheduler.ml"
 
 (* splits a line by supplied delimiter *)
 let parse_to_list delim line =
