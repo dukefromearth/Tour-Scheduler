@@ -93,10 +93,6 @@ let rec exists_in x ls =
 let employee_has_reached_max_tours employee =
 	if employee.weekly_tour_count >= (int_of_string (employee.max_tours)) then true else false
 
-let reset_employee_tour_count employees = 
-	let employees = List.map (fun x -> 0) employees in 
-	employees
-
 (* Checks if there is employee conflict with the given schedule *)
 let no_conflict emp schedule =
 	if ((exists_in schedule.neighborhood emp.duties) != true) then false else
@@ -179,8 +175,8 @@ let make_daily_schedule employees schedule =
 	aux employees schedule []
 
 let make_schedule employees schedule =
-	let end_of_week = add_x_days_and_return_date 7 (List.hd schedule) in
-	let rec aux emps sched =
+	let end_of_week = add (date_of_string (List.hd schedule).date) (Period.day 7) in
+	let rec aux emps sched eow =
 		match sched with
 		| [] -> print_endline "All set"
 		| _ -> 
@@ -188,11 +184,14 @@ let make_schedule employees schedule =
 			let rest_of_sched = get_rest_of_schedule sched in
 			let curr_day_date = date_of_string (List.hd curr_day_sched).date in
 			let emps = make_daily_schedule emps curr_day_sched in
-			if (compare curr_day_date end_of_week) > 0 then print_endline "less"
-			else print_endline "greater";
-			aux emps rest_of_sched
+			if (compare curr_day_date eow) >= 0 then 
+				let eow = add curr_day_date (Period.day 7) in
+				let emps = employees in
+				aux emps rest_of_sched eow
+			else
+			aux emps rest_of_sched eow
 	in 
-	aux employees schedule
+	aux employees schedule end_of_week
 
 
 
