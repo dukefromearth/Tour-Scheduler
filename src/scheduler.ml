@@ -1,4 +1,9 @@
+#use "dates.ml"
+#require "calendar"
 #use "parse_csv.ml"
+open CalendarLib;;
+open Date;;
+
 
 (****************************************************************************** 
 		Records
@@ -39,7 +44,7 @@ let make_employee_from_list ls = {
 	days_off = parse_to_list ";" (List.nth ls 2);
 	days_off_times = parse_to_list ";" (List.nth ls 3);
 	set_schedule = parse_to_list ";" (List.nth ls 4);
-	max_tours = List.nth ls 5;
+	max_tours = (List.nth ls 5);
 	duties = parse_to_list ";" (List.nth ls 6);
 	weekly_tour_count = 0
 }
@@ -48,24 +53,36 @@ let make_employee_from_list ls = {
 		Functions
 ******************************************************************************)
 
+(* stack overflow code *)
+let replace l pos a  = List.mapi (fun i x -> if i = pos then a else x) l
+
+let date_of_string dt = 
+  let dt = parse_to_list "/" dt in
+  let dt = List.map int_of_string dt in
+  let dt = (make (List.nth dt 2) (List.nth dt 0) (List.nth dt 1)) in
+  dt
+
+let date_of_int_list dt = 
+	let yr = List.hd dt in 
+  let mo = List.nth dt 1 in 
+  let dy = List.nth dt 2 in 
+  let dt = make yr mo dy in 
+  dt
+
+let add_x_days_and_return_date x sched =
+	let end_of_week = parse_to_list "/" sched.date in
+	let end_of_week = List.map int_of_string end_of_week in
+	let end_of_week = replace end_of_week 1 ((List.nth end_of_week 1) + x) in
+	let end_of_week = date_of_int_list end_of_week in
+	end_of_week
+
 let empty_employee =
 	make_employee_from_list ["NONE AVAILABLE!";"0";"";"";"";"";"";""]
 
 (* Employee Comparator *)
-let less_than emp1 emp2 =
-	if emp1.priority < emp2.priority then true else false
-
-let less_than_date lhs rhs =
-	let dt1 = (List.map int_of_string (parse_to_list "/" lhs)) in
-	let dt2 = (List.map int_of_string (parse_to_list "/" rhs)) in
-	if (List.nth dt1 2) < (List.nth dt2 2) then true 
-	else if (List.nth dt1 2) > (List.nth dt2 2) then false
-	else if (List.nth dt1 0) < (List.nth dt2 0) then true 
-	else if (List.nth dt1 0) > (List.nth dt2 0) then false
-	else if (List.nth dt1 1) < (List.nth dt2 1) then true 
-	else false
-
-
+let compare_emp_priority emp1 emp2 =
+	if emp1.priority < emp2.priority then -1 else
+	if emp1.priority > emp2.priority then 1 else 0
 
 (* Compares list to item, returns true if item already exists in list *)
 let rec exists_in x ls =
@@ -73,9 +90,13 @@ let rec exists_in x ls =
 		| [] -> false
 		| h::t -> if h = x then true else exists_in x t
 
+let employee_has_reached_max_tours employee =
+	if employee.weekly_tour_count >= (int_of_string (employee.max_tours)) then true else false
+
 (* Checks if there is employee conflict with the given schedule *)
 let no_conflict emp schedule =
 	if ((exists_in schedule.neighborhood emp.duties) != true) then false else
+	if (employee_has_reached_max_tours emp) then false else 
 	if (exists_in schedule.date emp.days_off) then
 		(if ((exists_in schedule.time emp.days_off_times) ||
 				 (List.hd emp.days_off_times = "ALL")) then false else true)
@@ -91,26 +112,36 @@ let get_next_available_employee_at_head emps date =
 	let rec get_next emp dt acc = 
 		match emp with
 		| [] -> (List.cons empty_employee acc)
-		| hd::tl -> if no_conflict hd dt then hd::(List.append tl (List.rev acc)) else get_next tl dt (List.cons hd acc)
+		| hd::tl -> if no_conflict hd dt then hd::(List.append (List.rev acc) tl) else get_next tl dt (List.cons hd acc)
 	in
 	get_next emps date []
 
+let set_to_zero emp = 
+	let emp = {emp with weekly_tour_count = 0} in
+	emp
+
+let set_weekly_tour_count_to_zero employees = 
+	List.map set_to_zero employees
+
 let get_next_days_schedule schedule =
 	if schedule = [] then [] else
-	let day = (List.hd schedule).day_of_week in
+	let date = (List.hd schedule).date in
 	let rec match_days sched acc =
-		match schedule with
+		match sched with
 		| [] -> List.rev acc
-		| hd::tl -> if hd.day_of_week = day then match_days tl (List.cons hd acc) else List.rev acc
+		| hd::tl -> if hd.date = date then match_days tl (List.cons hd acc) else List.rev acc
 	in
 	match_days schedule []
 
 let rec get_rest_of_schedule schedule =
-	let day = (List.hd schedule).day_of_week in
-	match schedule with
-	| [] -> schedule
-	| hd::tl -> if hd.day_of_week = day then get_rest_of_schedule tl else tl
-
+	if schedule = [] then [] else
+	let date = (List.hd schedule).date in
+	let rec match_days sched =
+		match sched with
+		| [] -> []
+		| hd::tl -> if hd.date = date then match_days tl else sched
+	in
+	match_days schedule
 
 let create_employee_hash emp = 
 	let emp_hash = Hashtbl.create (List.length emp) in
@@ -123,35 +154,57 @@ let create_employee_hash emp =
 	in
 	aux emp emp_hash
 
+let employee_sort f employees =
+	let employees = List.sort f employees in
+	employees
 (*  *)
 let schedule x = parse_line_to_list 1 make_schedule_from_list x
 
 let employees x = parse_line_to_list 1 make_employee_from_list x
 
-let rec make_schedule employees schedule =
-	let first_day = (List.hd schedule).date in
-	let rec aux emps schedule =
-		if schedule = [] then () else
-			let employees = get_next_days_schedule schedule in
-			let schedule = get_rest_of_schedule in
-			if (List.hd schedule).day_of_week = first_day then
-		aux employees schedule
-	in
-	aux employees schedule
-
-
-
 let make_daily_schedule employees schedule =
-	let rec mk_dly_sched emps sched acc =
+	let rec aux empls sched acc =
 		match sched with
-		| [] -> (List.rev acc)
-		| hd::tl -> 
-			let emps = get_next_available_employee_at_head employees hd in
-			let emp = List.hd emps in
-			let emp = {emp with weekly_tour_count = emp.weekly_tour_count + 1} in
-			print_schedule_line (List.hd emps) hd;
-			mk_dly_sched (List.tl emps) tl (List.cons emp acc)
-	in
-	mk_dly_sched employees schedule []
+		| [] -> employee_sort compare_emp_priority (List.append empls acc)
+		| hd::tl ->
+			let x = get_next_available_employee_at_head empls hd in
+			let emp = {(List.hd x) with weekly_tour_count = (List.hd x).weekly_tour_count + 1} in
+			print_schedule_line (List.hd x) hd;
+			aux (List.tl x) (List.tl sched) (List.cons emp acc)
+	in 
+	aux employees schedule []
 
+let make_schedule employees schedule =
+	let end_of_week = add (date_of_string (List.hd schedule).date) (Period.day 7) in
+	let rec aux emps sched eow =
+		match sched with
+		| [] -> print_endline "All set"
+		| _ -> 
+			let curr_day_sched = get_next_days_schedule sched in
+			let rest_of_sched = get_rest_of_schedule sched in
+			let curr_day_date = date_of_string (List.hd curr_day_sched).date in
+			let emps = make_daily_schedule emps curr_day_sched in
+			if (compare curr_day_date eow) >= 0 then 
+				let eow = add curr_day_date (Period.day 7) in
+				let emps = employees in
+				aux emps rest_of_sched eow
+			else
+			aux emps rest_of_sched eow
+	in 
+	aux employees schedule end_of_week
+
+
+
+
+
+
+(* Takes in a single day of events and allocates an employee to them 
+
+					let end_of_week = add end_of_week (Period.day 7);
+				let emps = reset_employee_tour_count employees;
+
+	let emp = {emp with weekly_tour_count = emp.weekly_tour_count + 1}
+	print_schedule_line emp hd; 
+
+*)
 
