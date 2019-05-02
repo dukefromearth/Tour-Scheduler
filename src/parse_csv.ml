@@ -10,7 +10,7 @@ let get_line ic =
   with
   | End_of_file -> None
 
-(* uses supplied function to  *)
+(* uses supplied function to parse according to the function *)
 let parse_line_to_list start_from my_fun filename =
   let ic = open_in filename in
   let rec read acc i =
