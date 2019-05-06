@@ -1,8 +1,9 @@
-#use "dates.ml"
 #require "calendar"
+#use "dates.ml"
 #use "parse_csv.ml"
 open CalendarLib;;
 open Date;;
+open Printf;;
 
 
 (****************************************************************************** 
@@ -26,7 +27,6 @@ type schedule = {
 	time : string;
 	day_of_week : string
 }
-
 (****************************************************************************** 
 		Record setting helpers
 ******************************************************************************)
@@ -50,11 +50,22 @@ let make_employee_from_list ls = {
 }
 
 (****************************************************************************** 
-		Functions
+		Helpers
 ******************************************************************************)
 
-(* stack overflow code *)
-let replace l pos a  = List.mapi (fun i x -> if i = pos then a else x) l
+(* Compares list to item, returns true if item already exists in list *)
+let rec exists_in x ls =
+		match ls with
+		| [] -> false
+		| h::t -> if h = x then true else exists_in x t
+
+
+let replace l pos a = List.mapi (fun i x -> if i = pos then a else x) l
+
+
+(****************************************************************************** 
+		Date Handling
+******************************************************************************)
 
 let date_of_string dt = 
   let dt = parse_to_list "/" dt in
@@ -76,6 +87,38 @@ let add_x_days_and_return_date x sched =
 	let end_of_week = date_of_int_list end_of_week in
 	end_of_week
 
+
+(****************************************************************************** 
+		File output
+******************************************************************************)
+
+let print_schedule_line oc emp schedule =
+	fprintf oc "%s" emp.name;
+	fprintf oc "%s" ",";
+	fprintf oc "%s" schedule.neighborhood;
+	fprintf oc "%s" ",";
+	fprintf oc "%s" schedule.date;
+	fprintf oc "%s" ",";
+	fprintf oc "%s" schedule.time;
+	fprintf oc "%s" ",";
+	fprintf oc "%s\n" schedule.day_of_week
+
+let print_headers oc =
+	fprintf oc "%s" "Employee Name";
+	fprintf oc "%s" ",";
+	fprintf oc "%s" "Neighborhood";
+	fprintf oc "%s" ",";
+	fprintf oc "%s" "Date";
+	fprintf oc "%s" ",";
+	fprintf oc "%s" "Time";
+	fprintf oc "%s" ",";
+	fprintf oc "%s\n" "Day of Week"
+
+
+(****************************************************************************** 
+		Employee Handling
+******************************************************************************)
+
 let empty_employee =
 	make_employee_from_list ["NONE AVAILABLE!";"0";"";"";"";"";"";""]
 
@@ -83,12 +126,6 @@ let empty_employee =
 let compare_emp_priority emp1 emp2 =
 	if emp1.priority < emp2.priority then -1 else
 	if emp1.priority > emp2.priority then 1 else 0
-
-(* Compares list to item, returns true if item already exists in list *)
-let rec exists_in x ls =
-		match ls with
-		| [] -> false
-		| h::t -> if h = x then true else exists_in x t
 
 let employee_has_reached_max_tours employee =
 	if employee.weekly_tour_count >= (int_of_string (employee.max_tours)) then true else false
@@ -101,13 +138,6 @@ let no_conflict emp schedule =
 		(if ((exists_in schedule.time emp.days_off_times) ||
 				 (List.hd emp.days_off_times = "ALL")) then false else true)
 	else if (exists_in schedule.day_of_week emp.days_off) then false else true
-
-let print_schedule_line emp schedule =
-	print_string emp.name;
-	print_string ",";
-	print_string schedule.date;
-	print_string ",";
-	print_endline schedule.time
 
 let get_next_available_employee_at_head emps date =
 	let rec get_next emp dt acc = 
@@ -123,6 +153,28 @@ let set_to_zero emp =
 
 let set_weekly_tour_count_to_zero employees = 
 	List.map set_to_zero employees
+
+let create_employee_hash emp = 
+	let emp_hash = Hashtbl.create (List.length emp) in
+	let rec aux emp hash =
+		match emp with
+		| [] -> hash
+		| hd::tl -> 
+			Hashtbl.add hash (hd.name) hd;
+			aux tl hash
+	in
+	aux emp emp_hash
+
+let employee_sort f employees =
+	let employees = List.sort f employees in
+	employees
+(*  *)
+let employees x = parse_line_to_list 1 make_employee_from_list x
+
+
+(****************************************************************************** 
+		Employee Handling
+******************************************************************************)
 
 let get_next_days_schedule schedule =
 	if schedule = [] then [] else
@@ -144,48 +196,39 @@ let rec get_rest_of_schedule schedule =
 	in
 	match_days schedule
 
-let create_employee_hash emp = 
-	let emp_hash = Hashtbl.create (List.length emp) in
-	let rec aux emp hash =
-		match emp with
-		| [] -> hash
-		| hd::tl -> 
-			Hashtbl.add hash (hd.name) hd;
-			aux tl hash
-	in
-	aux emp emp_hash
-
-let employee_sort f employees =
-	let employees = List.sort f employees in
-	employees
-(*  *)
-let schedule x = parse_line_to_list 1 make_schedule_from_list x
-
-let employees x = parse_line_to_list 1 make_employee_from_list x
-
-let make_daily_schedule employees schedule =
+(* Takes in an employee record and schedule record and schedules based on availablility *)
+let make_daily_schedule oc employees schedule =
 	let rec aux empls sched acc =
 		match sched with
 		| [] -> employee_sort compare_emp_priority (List.append empls acc)
 		| hd::tl ->
 			let x = get_next_available_employee_at_head empls hd in
 			let emp = {(List.hd x) with weekly_tour_count = (List.hd x).weekly_tour_count + 1} in
-			print_schedule_line (List.hd x) hd;
+			print_schedule_line oc (List.hd x) hd;
 			aux (List.tl x) (List.tl sched) (List.cons emp acc)
 	in 
 	aux employees schedule []
 
-let make_schedule employees schedule =
-	let end_of_week = add (date_of_string (List.hd schedule).date) (Period.day 7) in
+let schedule x = parse_line_to_list 1 make_schedule_from_list x
 
+
+(****************************************************************************** 
+		Main Routine
+******************************************************************************)
+
+(* Uses the make daily schedule function to output schedule to a file *)
+let make_and_save_schedule_to_file employees schedule =
+	let oc = open_out "new_schedule.csv" in
+	let print_head = print_headers oc in
+	let end_of_week = add (date_of_string (List.hd schedule).date) (Period.day 7) in
 	let rec aux emps sched eow =
 		match sched with
-		| [] -> print_endline "All set"
+		| [] -> print_endline "Schedule ouput in current directory."
 		| _ -> 
 			let curr_day_sched = get_next_days_schedule sched in
 			let rest_of_sched = get_rest_of_schedule sched in
 			let curr_day_date = date_of_string (List.hd curr_day_sched).date in
-			let emps = make_daily_schedule emps curr_day_sched in
+			let emps = make_daily_schedule oc emps curr_day_sched in
 			if (compare curr_day_date eow) >= 0 then 
 				let eow = add curr_day_date (Period.day 7) in
 				let emps = employees in
@@ -193,20 +236,6 @@ let make_schedule employees schedule =
 			else
 			aux emps rest_of_sched eow
 	in 
-	aux employees schedule end_of_week
-
-
-
-
-
-
-(* Takes in a single day of events and allocates an employee to them 
-
-					let end_of_week = add end_of_week (Period.day 7);
-				let emps = reset_employee_tour_count employees;
-
-	let emp = {emp with weekly_tour_count = emp.weekly_tour_count + 1}
-	print_schedule_line emp hd; 
-
-*)
+	aux employees schedule end_of_week;
+	close_out oc
 

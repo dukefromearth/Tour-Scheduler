@@ -14,4 +14,15 @@ let schedule_helper formula num_weeks =
 			aux formula (num_weeks - 1) (curr_week +. 1.0)
 	in 
 	aux formula num_weeks 1.0
-(*print_int (int_of_float (1.0 +. (f (float_of_int i))))*)
+
+
+let day_helper day month year num_weeks =
+	let first_date = (make year month day) in
+	let rec aux date num_weeks curr_week =
+		match num_weeks with
+		| 0 -> print_endline "finished"
+		| _ ->
+			let date = add date (Period.day 7)
+			print_string day_of_month date
+	in 
+	aux formula num_weeks 1.0

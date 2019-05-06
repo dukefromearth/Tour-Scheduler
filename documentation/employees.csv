@@ -1,0 +1,23 @@
+Guide,Priority Number,Days Off,Days Off Time,Set Day/Time,Max tours,Duties
+Bert,1,Sunday;1/20/2019,ALL,Saturday-1100;Tuesday-1200,2,Greenwich;Chinatown;Nolita
+Stephen,2,1/21/19,ALL,Saturday-1100;Tuesday-1200,2,Greenwich;Nolita
+Cindy,3,1/22/19,ALL,Saturday-1100;Tuesday-1200,2,Greenwich
+Curt,4,1/23/19,ALL,Saturday-1100;Tuesday-1200,2,Greenwich
+Paulette,5,1/24/19,ALL,Saturday-1100;Tuesday-1200,2,Nolita
+Chip,6,1/25/19,ALL,Saturday-1100;Tuesday-1200,2,Greenwich
+Colleen,7,1/26/19,ALL,Saturday-1100;Tuesday-1200,2,Greenwich
+Darrel,8,2/20/19,ALL,Saturday-1100;Tuesday-1200,2,Greenwich
+David,9,2/21/19,ALL,Saturday-1100;Tuesday-1200,2,HOV
+Heather,10,2/22/19,ALL,Saturday-1100;Tuesday-1200,2,HOV;Nolita
+Jackie,11,2/23/19,ALL,Saturday-1100;Tuesday-1200,2,Chelsea
+Joanna,12,2/24/19,ALL,Saturday-1100;Tuesday-1200,2,HOV
+Joe,13,2/25/19,ALL,Saturday-1100;Tuesday-1200,0,HOV
+Jordan,14,2/26/19,ALL,Saturday-1100;Tuesday-1200,0,Nolita
+Marie,15,2/20/19,ALL,Saturday-1100;Tuesday-1200,0,Greenwich
+Mason,16,2/21/19,ALL,Saturday-1100;Tuesday-1200,0,Greenwich
+Raheem,17,2/22/19,ALL,Saturday-1100;Tuesday-1200,0,Greenwich;HOV
+RJ,18,2/23/19,ALL,Saturday-1100;Tuesday-1200,0,Greenwich
+Robin,19,2/24/19,ALL,Saturday-1100;Tuesday-1200,0,Greenwich
+RobinS,20,2/25/19,ALL,Saturday-1100;Tuesday-1200,0,Greenwich
+Ryan,21,2/26/19,ALL,Saturday-1100;Tuesday-1200,0,HOV
+Ted,22,3/27/19,ALL,Saturday-1100;Tuesday-1200,0,Greenwich
