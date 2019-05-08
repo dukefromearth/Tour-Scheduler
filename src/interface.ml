@@ -1,9 +1,5 @@
-           (* François Thomasset *)
-          (* INRIA - Rocquencourt *)
-            (* 2007 *)
-#require "labltk" ;;
 open Tk ;;
-#use "scheduler.ml"
+open Scheduler;;
 let top = openTk () ;;
 Wm.title_set top "Scheduler" ;;
 Wm.geometry_set top "330x280";;
@@ -15,6 +11,7 @@ let s = ref [];;
 let e = ref [];;
 let img_width = 116;;
 let img_height = 106;;
+
 (*********************************************************************
   Create and set labels
 *********************************************************************)

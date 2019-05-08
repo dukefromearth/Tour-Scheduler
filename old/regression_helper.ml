@@ -15,7 +15,6 @@ let schedule_helper formula num_weeks =
 	in 
 	aux formula num_weeks 1.0
 
-
 let day_helper day month year num_weeks =
 	let first_date = (make year month day) in
 	let rec aux date num_weeks curr_week =

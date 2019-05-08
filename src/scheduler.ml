@@ -1,10 +1,25 @@
-#require "calendar"
-#use "dates.ml"
-#use "parse_csv.ml"
+(* Stephen Duke
+   Hunter College
+   www.stephenduke.earth
+   2007 *)
+
 open CalendarLib;;
 open Date;;
 open Printf;;
+open Parse_csv;;
 
+
+(****************************************************************************** 
+		Helpers
+******************************************************************************)
+
+(* Compares list to item, returns true if item already exists in list *)
+let rec exists_in x ls =
+		match ls with
+		| [] -> false
+		| h::t -> if h = x then true else exists_in x t
+
+let replace l pos a = List.mapi (fun i x -> if i = pos then a else x) l
 
 (****************************************************************************** 
 		Records
@@ -48,19 +63,6 @@ let make_employee_from_list ls = {
 	duties = parse_to_list ";" (List.nth ls 6);
 	weekly_tour_count = 0
 }
-
-(****************************************************************************** 
-		Helpers
-******************************************************************************)
-
-(* Compares list to item, returns true if item already exists in list *)
-let rec exists_in x ls =
-		match ls with
-		| [] -> false
-		| h::t -> if h = x then true else exists_in x t
-
-
-let replace l pos a = List.mapi (fun i x -> if i = pos then a else x) l
 
 
 (****************************************************************************** 
@@ -173,7 +175,7 @@ let employees x = parse_line_to_list 1 make_employee_from_list x
 
 
 (****************************************************************************** 
-		Employee Handling
+		Schedule Handling
 ******************************************************************************)
 
 let get_next_days_schedule schedule =
