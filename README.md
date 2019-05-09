@@ -6,7 +6,7 @@ Creates and schedules employees automatically given a schedule.
 First, install opam and labltk via opam
 
       $ opam install labltk
-      # opam install calendar
+      $ opam install calendar
 
 Second, type the following
 
