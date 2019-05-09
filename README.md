@@ -25,10 +25,13 @@ Creates and schedules employees automatically given a schedule.
 <img src="https://github.com/jengajenga/Tour-Scheduler/blob/master/images/schedule.png" alt="schedule" width="350">
 
 
-#### Run the program
+### Run the program
 
-Load Employees CSV         |  Load Schedule CSV       |  Run       
-:-------------------------:|:-------------------------|:-------------------------:
-![](https://github.com/jengajenga/Tour-Scheduler/blob/master/images/scheduler1.png)  |  ![](https://github.com/jengajenga/Tour-Scheduler/blob/master/images/scheduler2.png)  | ![](https://github.com/jengajenga/Tour-Scheduler/blob/master/images/scheduler3.png)
+Load Employees CSV         |Load Schedule CSV         |Run       
+:-----------------------:|:-----------------------|:-------------------------:
+![](https://github.com/jengajenga/Tour-Scheduler/blob/master/images/scheduler1.png)  |![](https://github.com/jengajenga/Tour-Scheduler/blob/master/images/scheduler2.png)  |![](https://github.com/jengajenga/Tour-Scheduler/blob/master/images/scheduler3.png)
 ### View your output.
+
+Output should be located in your current directory under "schedule_output.csv"
+
 <img src="https://github.com/jengajenga/Tour-Scheduler/blob/master/images/schedule_output.png" alt="schedule_output" width="400">
