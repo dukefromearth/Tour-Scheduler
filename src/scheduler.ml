@@ -8,7 +8,6 @@ open Date;;
 open Printf;;
 open Parse_csv;;
 
-
 (****************************************************************************** 
 		Helpers
 ******************************************************************************)
@@ -31,9 +30,9 @@ type employee = {
 	days_off : string list;
 	days_off_times : string list;
 	set_schedule : string list;
-	max_tours : string;
+	max_shifts : string;
 	duties : string list; 
-	weekly_tour_count : int
+	weekly_shift_count : int
 }
 
 type schedule = {
@@ -42,6 +41,7 @@ type schedule = {
 	time : string;
 	day_of_week : string
 }
+
 (****************************************************************************** 
 		Record setting helpers
 ******************************************************************************)
@@ -59,9 +59,9 @@ let make_employee_from_list ls = {
 	days_off = parse_to_list ";" (List.nth ls 2);
 	days_off_times = parse_to_list ";" (List.nth ls 3);
 	set_schedule = parse_to_list ";" (List.nth ls 4);
-	max_tours = (List.nth ls 5);
+	max_shifts = (List.nth ls 5);
 	duties = parse_to_list ";" (List.nth ls 6);
-	weekly_tour_count = 0
+	weekly_shift_count = 0
 }
 
 
@@ -108,7 +108,7 @@ let print_schedule_line oc emp schedule =
 let print_headers oc =
 	fprintf oc "%s" "Employee Name";
 	fprintf oc "%s" ",";
-	fprintf oc "%s" "Neighborhood";
+	fprintf oc "%s" "Duty";
 	fprintf oc "%s" ",";
 	fprintf oc "%s" "Date";
 	fprintf oc "%s" ",";
@@ -129,13 +129,13 @@ let compare_emp_priority emp1 emp2 =
 	if emp1.priority < emp2.priority then -1 else
 	if emp1.priority > emp2.priority then 1 else 0
 
-let employee_has_reached_max_tours employee =
-	if employee.weekly_tour_count >= (int_of_string (employee.max_tours)) then true else false
+let employee_has_reached_max_shifts employee =
+	if employee.weekly_shift_count >= (int_of_string (employee.max_shifts)) then true else false
 
 (* Checks if there is employee conflict with the given schedule *)
 let no_conflict emp schedule =
 	if ((exists_in schedule.neighborhood emp.duties) != true) then false else
-	if (employee_has_reached_max_tours emp) then false else 
+	if (employee_has_reached_max_shifts emp) then false else 
 	if (exists_in schedule.date emp.days_off) then
 		(if ((exists_in schedule.time emp.days_off_times) ||
 				 (List.hd emp.days_off_times = "ALL")) then false else true)
@@ -150,10 +150,10 @@ let get_next_available_employee_at_head emps date =
 	get_next emps date []
 
 let set_to_zero emp = 
-	let emp = {emp with weekly_tour_count = 0} in
+	let emp = {emp with weekly_shift_count = 0} in
 	emp
 
-let set_weekly_tour_count_to_zero employees = 
+let set_weekly_shift_count_to_zero employees = 
 	List.map set_to_zero employees
 
 let create_employee_hash emp = 
@@ -205,7 +205,7 @@ let make_daily_schedule oc employees schedule =
 		| [] -> employee_sort compare_emp_priority (List.append empls acc)
 		| hd::tl ->
 			let x = get_next_available_employee_at_head empls hd in
-			let emp = {(List.hd x) with weekly_tour_count = (List.hd x).weekly_tour_count + 1} in
+			let emp = {(List.hd x) with weekly_shift_count = (List.hd x).weekly_shift_count + 1} in
 			print_schedule_line oc (List.hd x) hd;
 			aux (List.tl x) (List.tl sched) (List.cons emp acc)
 	in 
@@ -221,7 +221,7 @@ let schedule x = parse_line_to_list 1 make_schedule_from_list x
 (* Uses the make daily schedule function to output schedule to a file *)
 let make_and_save_schedule_to_file employees schedule =
 	let oc = open_out "new_schedule.csv" in
-	let print_head = print_headers oc in
+	print_headers oc;
 	let end_of_week = add (date_of_string (List.hd schedule).date) (Period.day 7) in
 	let rec aux emps sched eow =
 		match sched with
