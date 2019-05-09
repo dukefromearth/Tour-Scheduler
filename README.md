@@ -3,8 +3,7 @@ Creates and schedules employees automatically given a schedule.
 
 ## To Compile into a UNIX Executible and run the program:
 
-1. opam install labltk
-2. opam install calendar
+Install opam and labltk via opam.
 
       $ ocamlopt -o Scheduler -linkpkg -package calendar,labltk parse_csv.ml scheduler.mli scheduler.ml interface.ml
       $ ./Scheduler
