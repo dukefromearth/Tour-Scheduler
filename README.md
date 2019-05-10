@@ -1,4 +1,4 @@
-# Tour-Scheduler
+# OCAML - Scheduler
 Creates and schedules employees automatically given a schedule.
 
 ## To Compile into a UNIX Executible and run the program:
