@@ -36,6 +36,6 @@ Load Employees CSV         |Load Schedule CSV         |Run
 ![](https://github.com/jengajenga/Tour-Scheduler/blob/master/images/scheduler1.png)  |![](https://github.com/jengajenga/Tour-Scheduler/blob/master/images/scheduler2.png)  |![](https://github.com/jengajenga/Tour-Scheduler/blob/master/images/scheduler3.png)
 ### View your output.
 
-Output should be located in your current directory under "schedule_output.csv"
+Output should be located in your current directory under "new_schedule.csv"
 
 <img src="https://github.com/jengajenga/Tour-Scheduler/blob/master/images/schedule_output.png" alt="schedule_output" width="400">
