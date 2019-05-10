@@ -3,7 +3,7 @@ Creates and schedules employees automatically given a schedule.
 
 ## To Compile into a UNIX Executible and run the program:
 
-First, install opam and labltk via opam
+First, install calendar and labltk via opam
 
       $ opam install labltk
       $ opam install calendar
