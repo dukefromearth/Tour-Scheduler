@@ -1,6 +1,12 @@
-
-
-
+(*********************************)
+(*                               *)
+(*        Simple Scheduler       *)
+(*              by               *)
+(*         Stephen Duke          *)
+(*                               *)
+(*     www.stephenduke.earth     *)
+(*                               *)
+(*********************************)
 
 
 type employee = {
